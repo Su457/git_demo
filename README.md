@@ -1,3 +1,11 @@
-# python_demo
+# Python_demo
 
-一个简单的 Python 示例项目。
+- 🙊第一个Python程序：`"Hello Word!"`
+<div align="center">
+
+  <img src="./Prctures/mm.png" alt="心形图示例" width="300">
+
+  </div>
+  
+  - 👏🏻👤👏🏻👤👏🏻👤
+  ---
