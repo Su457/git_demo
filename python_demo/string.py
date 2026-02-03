@@ -24,3 +24,6 @@ another = course
 print(another[0:20])#切片，包含第0个位置，不包含第20个位置
 name = 'Jennifer'
 print(name[1:-1])#'-1'表示的倒数第一个位置
+
+
+print(course[0:6])
