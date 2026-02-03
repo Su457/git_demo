@@ -1,6 +1,6 @@
-frist = 'John'
+frist_name = 'John'
 last = 'Smith'
-message = frist + ' [' + last + '] is a coder'
-msg = f'{frist} [{last}] is a coder'
+message = frist_name + ' [' + last + '] is a coder'
+msg = f'{frist_name} [{last}] is a coder'
 print(message)
 print(msg)
