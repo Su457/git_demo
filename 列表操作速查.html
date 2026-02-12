@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python 列表操作速查</title>
+    <style>
+        :root {
+            --primary-bg: #fdfdfd;
+            --card-bg: #ffffff;
+            --text-main: #333;
+            --text-secondary: #666;
+            --code-bg: #f4f6f8;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            
+            /* Category Colors */
+            --color-create: #2ecc71;
+            --color-delete: #e74c3c;
+            --color-update: #f39c12;
+            --color-read: #3498db;
+            
+            /* Table Backgrounds */
+            --bg-create-light: #eafaf1;
+            --bg-delete-light: #fdedec;
+            --bg-update-light: #fef5e7;
+            --bg-read-light: #ebf5fb;
+
+            --color-table-header: #34495e;
+            --border-color: #eee;
+            --border-group-color: #cbd5e0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            scroll-behavior: smooth; /* 全局平滑滚动 */
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            font-size: 2rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .section-title span.icon {
+            margin-right: 10px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        /* Color Modifiers */
+        .create .icon { background-color: var(--color-create); }
+        .delete .icon { background-color: var(--color-delete); }
+        .update .icon { background-color: var(--color-update); }
+        .read .icon { background-color: var(--color-read); }
+        .summary .icon { background-color: var(--color-table-header); }
+
+        .section-title.create { color: var(--color-create); border-color: var(--color-create); }
+        .section-title.delete { color: var(--color-delete); border-color: var(--color-delete); }
+        .section-title.update { color: var(--color-update); border-color: var(--color-update); }
+        .section-title.read { color: var(--color-read); border-color: var(--color-read); }
+        .section-title.summary { color: var(--color-table-header); border-color: var(--color-table-header); }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            transition: all 0.3s;
+            border-left: 5px solid transparent;
+            position: relative; /* For flash effect positioning */
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Flash Animation Class */
+        .card.active-flash {
+            animation: flash-highlight 1.5s ease-out;
+            z-index: 10;
+        }
+
+        @keyframes flash-highlight {
+            0% { transform: scale(1); box-shadow: 0 0 0 rgba(0,0,0,0); }
+            20% { transform: scale(1.03); box-shadow: 0 0 20px rgba(52, 152, 219, 0.4); background-color: #fffde7; }
+            100% { transform: scale(1); box-shadow: var(--shadow); background-color: var(--card-bg); }
+        }
+
+        .create .card { border-left-color: var(--color-create); }
+        .delete .card { border-left-color: var(--color-delete); }
+        .update .card { border-left-color: var(--color-update); }
+        .read .card { border-left-color: var(--color-read); }
+
+        .func-name {
+            font-family: Consolas, Monaco, "Andale Mono", monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .func-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 0;
+            border: 1px solid #e1e4e8;
+        }
+
+        code {
+            font-family: Consolas, Monaco, "Andale Mono", monospace;
+            font-size: 0.9rem;
+            color: #24292e;
+        }
+
+        /* --- Table Styling --- */
+        .table-wrapper {
+            overflow-x: auto;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .table-hint {
+            text-align: right;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 14px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #ddd;
+        }
+
+        /* Interactive Rows */
+        tbody tr {
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+
+        tbody tr:hover td:not(.type-col) {
+            background-color: #f0f7ff;
+        }
+
+        /* --- Type Column Styling --- */
+        td.type-col {
+            text-align: center;
+            font-weight: bold;
+            width: 12%;
+            cursor: default; /* Type cell itself doesn't look clickable, but the row is */
+        }
+
+        td.type-create { 
+            background-color: var(--bg-create-light); 
+            color: var(--color-create); 
+            border-right: 3px solid var(--color-create);
+        }
+        td.type-delete { 
+            background-color: var(--bg-delete-light); 
+            color: var(--color-delete); 
+            border-right: 3px solid var(--color-delete);
+        }
+        td.type-update { 
+            background-color: var(--bg-update-light); 
+            color: var(--color-update); 
+            border-right: 3px solid var(--color-update);
+        }
+        td.type-read { 
+            background-color: var(--bg-read-light); 
+            color: var(--color-read); 
+            border-right: 3px solid var(--color-read);
+        }
+
+        tr.group-end td {
+            border-bottom: 3px solid var(--border-group-color);
+        }
+
+        td code {
+            background: rgba(0,0,0,0.05);
+            padding: 3px 6px;
+            border-radius: 4px;
+            color: #d63384;
+            font-family: Consolas, Monaco, monospace;
+        }
+
+        /* Syntax Highlighting */
+        .c-comment { color: #6a737d; font-style: italic; }
+        .c-str { color: #032f62; }
+        .c-num { color: #005cc5; }
+        .c-kw { color: #d73a49; } 
+        .c-func { color: #6f42c1; } 
+
+        @media (max-width: 600px) {
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🐍 Python 列表操作速查</h1>
+
+    <div class="section-group summary">
+        <div class="section-title summary">
+            <span class="icon">TABLE</span> 快速对照表 (Quick Reference)
+        </div>
+        <div class="table-hint">💡 提示：双击表格中的行，可直接跳转到详情卡片。</div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>类型</th>
+                        <th>函数/方法</th>
+                        <th>作用描述</th>
+                        <th>简单示例</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ondblclick="jumpTo('card-append')" title="双击跳转到 append 详情">
+                        <td rowspan="3" class="type-col type-create">增加<br>(Create)</td>
+                        <td><code>append(x)</code></td>
+                        <td>末尾追加元素</td>
+                        <td><code>list.append(1)</code></td>
+                    </tr>
+                    <tr ondblclick="jumpTo('card-insert')" title="双击跳转到 insert 详情">
+                        <td><code>insert(i, x)</code></td>
+                        <td>在索引 i 处插入 x</td>
+                        <td><code>list.insert(0, 1)</code></td>
+                    </tr>
+                    <tr class="group-end" ondblclick="jumpTo('card-extend')" title="双击跳转到 extend 详情">
+                        <td><code>extend(iter)</code></td>
+                        <td>合并另一个列表</td>
+                        <td><code>list.extend([1,2])</code></td>
+                    </tr>
+
+                    <tr ondblclick="jumpTo('card-pop')" title="双击跳转到 pop 详情">
+                        <td rowspan="3" class="type-col type-delete">删除<br>(Delete)</td>
+                        <td><code>pop(i)</code></td>
+                        <td>删除并返回索引 i 的元素</td>
+                        <td><code>val = list.pop()</code></td>
+                    </tr>
+                    <tr ondblclick="jumpTo('card-remove')" title="双击跳转到 remove 详情">
+                        <td><code>remove(x)</code></td>
+                        <td>删除第一个值为 x 的元素</td>
+                        <td><code>list.remove('a')</code></td>
+                    </tr>
+                    <tr class="group-end" ondblclick="jumpTo('card-clear')" title="双击跳转到 clear 详情">
+                        <td><code>clear()</code></td>
+                        <td>清空列表</td>
+                        <td><code>list.clear()</code></td>
+                    </tr>
+
+                    <tr ondblclick="jumpTo('card-sort')" title="双击跳转到 sort 详情">
+                        <td rowspan="2" class="type-col type-update">修改<br>(Update)</td>
+                        <td><code>sort()</code></td>
+                        <td>排序（修改原列表）</td>
+                        <td><code>list.sort()</code></td>
+                    </tr>
+                    <tr class="group-end" ondblclick="jumpTo('card-reverse')" title="双击跳转到 reverse 详情">
+                        <td><code>reverse()</code></td>
+                        <td>反转列表</td>
+                        <td><code>list.reverse()</code></td>
+                    </tr>
+
+                    <tr ondblclick="jumpTo('card-index')" title="双击跳转到 index 详情">
+                        <td rowspan="3" class="type-col type-read">查询<br>(Read)</td>
+                        <td><code>index(x)</code></td>
+                        <td>返回 x 的索引</td>
+                        <td><code>i = list.index('a')</code></td>
+                    </tr>
+                    <tr ondblclick="jumpTo('card-count')" title="双击跳转到 count 详情">
+                        <td><code>count(x)</code></td>
+                        <td>统计 x 出现的次数</td>
+                        <td><code>n = list.count(1)</code></td>
+                    </tr>
+                    <tr ondblclick="jumpTo('card-in')" title="双击跳转到 in 运算符详情">
+                        <td><code>in</code></td>
+                        <td>检查元素是否存在</td>
+                        <td><code>'a' in list</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-group create">
+        <div class="section-title create">
+            <span class="icon">ADD</span> 1. 增加元素 (Create)
+        </div>
+        <div class="card-grid">
+            <div class="card" id="card-append">
+                <span class="func-name">append(x)</span>
+                <div class="func-desc">最常用的，把东西扔进列表末尾。</div>
+                <pre><code>fruits = [<span class="c-str">'apple'</span>, <span class="c-str">'banana'</span>]
+fruits.append(<span class="c-str">'orange'</span>)
+<span class="c-comment"># 结果: ['apple', 'banana', 'orange']</span></code></pre>
+            </div>
+
+            <div class="card" id="card-insert">
+                <span class="func-name">insert(index, x)</span>
+                <div class="func-desc">强行插队，在指定位置放个新元素。</div>
+                <pre><code>nums = [<span class="c-num">1</span>, <span class="c-num">2</span>, <span class="c-num">4</span>]
+nums.insert(<span class="c-num">2</span>, <span class="c-num">3</span>) <span class="c-comment"># 在索引 2 插入 3</span>
+<span class="c-comment"># 结果: [1, 2, 3, 4]</span></code></pre>
+            </div>
+
+            <div class="card" id="card-extend">
+                <span class="func-name">extend(iterable)</span>
+                <div class="func-desc">批量合并，把另一个列表“拆开”再装进去。</div>
+                <pre><code>a = [<span class="c-num">1</span>, <span class="c-num">2</span>]
+b = [<span class="c-num">3</span>, <span class="c-num">4</span>]
+a.extend(b)
+<span class="c-comment"># 结果: [1, 2, 3, 4]</span></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-group delete">
+        <div class="section-title delete">
+            <span class="icon">DEL</span> 2. 删除元素 (Delete)
+        </div>
+        <div class="card-grid">
+            <div class="card" id="card-pop">
+                <span class="func-name">pop(index)</span>
+                <div class="func-desc">像弹簧一样弹出元素。它会返回被删掉的值。</div>
+                <pre><code>tasks = [<span class="c-str">'eat'</span>, <span class="c-str">'sleep'</span>, <span class="c-str">'code'</span>]
+done = tasks.pop(<span class="c-num">1</span>) <span class="c-comment"># 弹出 'sleep'</span>
+<span class="c-comment"># tasks: ['eat', 'code']</span>
+<span class="c-comment"># done: 'sleep'</span></code></pre>
+            </div>
+
+            <div class="card" id="card-remove">
+                <span class="func-name">remove(value)</span>
+                <div class="func-desc">按照长相（值）来删人，只删遇到的第一个。</div>
+                <pre><code>items = [<span class="c-str">'A'</span>, <span class="c-str">'B'</span>, <span class="c-str">'C'</span>, <span class="c-str">'B'</span>]
+items.remove(<span class="c-str">'B'</span>)
+<span class="c-comment"># 结果: ['A', 'C', 'B']</span></code></pre>
+            </div>
+
+            <div class="card" id="card-clear">
+                <span class="func-name">clear()</span>
+                <div class="func-desc">一键清空，变回空列表。</div>
+                <pre><code>data = [<span class="c-num">1</span>, <span class="c-num">2</span>, <span class="c-num">3</span>]
+data.clear()
+<span class="c-comment"># 结果: []</span></code></pre>
+            </div>
+
+            <div class="card">
+                <span class="func-name">del 语句</span>
+                <div class="func-desc">Python 的通用删除指令，可按索引删或删变量。</div>
+                <pre><code>arr = [<span class="c-num">10</span>, <span class="c-num">20</span>, <span class="c-num">30</span>]
+<span class="c-kw">del</span> arr[<span class="c-num">0</span>]
+<span class="c-comment"># 结果: [20, 30]</span></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-group update">
+        <div class="section-title update">
+            <span class="icon">MOD</span> 3. 修改与排序 (Update)
+        </div>
+        <div class="card-grid">
+            <div class="card">
+                <span class="func-name">索引直接修改</span>
+                <div class="func-desc">列表是“可变的”，直接指定位置赋值即可。</div>
+                <pre><code>colors = [<span class="c-str">'red'</span>, <span class="c-str">'blue'</span>]
+colors[<span class="c-num">1</span>] = <span class="c-str">'green'</span>
+<span class="c-comment"># 结果: ['red', 'green']</span></code></pre>
+            </div>
+
+            <div class="card" id="card-sort">
+                <span class="func-name">sort()</span>
+                <div class="func-desc">给列表排个序（默认从小到大）。</div>
+                <pre><code>nums = [<span class="c-num">3</span>, <span class="c-num">1</span>, <span class="c-num">4</span>]
+nums.sort()
+<span class="c-comment"># 结果: [1, 3, 4]</span></code></pre>
+            </div>
+
+            <div class="card" id="card-reverse">
+                <span class="func-name">reverse()</span>
+                <div class="func-desc">纯粹的头尾颠倒。</div>
+                <pre><code>letters = [<span class="c-str">'a'</span>, <span class="c-str">'b'</span>, <span class="c-str">'c'</span>]
+letters.reverse()
+<span class="c-comment"># 结果: ['c', 'b', 'a']</span></code></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-group read">
+        <div class="section-title read">
+            <span class="icon">READ</span> 4. 查询与统计 (Read)
+        </div>
+        <div class="card-grid">
+            <div class="card" id="card-index">
+                <span class="func-name">index(x)</span>
+                <div class="func-desc">问问 x 在哪个位置。</div>
+                <pre><code>tech = [<span class="c-str">'AI'</span>, <span class="c-str">'Python'</span>, <span class="c-str">'Web'</span>]
+pos = tech.index(<span class="c-str">'Python'</span>)
+<span class="c-comment"># 结果: 1</span></code></pre>
+            </div>
+
+            <div class="card" id="card-count">
+                <span class="func-name">count(x)</span>
+                <div class="func-desc">统计 x 出现了几次。</div>
+                <pre><code>scores = [<span class="c-num">90</span>, <span class="c-num">80</span>, <span class="c-num">90</span>, <span class="c-num">70</span>]
+num = scores.count(<span class="c-num">90</span>)
+<span class="c-comment"># 结果: 2</span></code></pre>
+            </div>
+
+            <div class="card" id="card-in">
+                <span class="func-name">in 运算符</span>
+                <div class="func-desc">快速判断某物是否在列表中。</div>
+                <pre><code>names = [<span class="c-str">'Alice'</span>, <span class="c-str">'Bob'</span>]
+print(<span class="c-str">'Alice'</span> <span class="c-kw">in</span> names)
+<span class="c-comment"># 结果: True</span></code></pre>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function jumpTo(elementId) {
+        // 1. 找到目标卡片
+        const element = document.getElementById(elementId);
+        
+        if (element) {
+            // 2. 滚动到该元素 (居中显示)
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // 3. 移除之前的动画 class (如果用户连续点击)
+            element.classList.remove('active-flash');
+            
+            // 4. 强制重绘，为了让动画能重新触发
+            void element.offsetWidth;
+            
+            // 5. 添加动画 class
+            element.classList.add('active-flash');
+        }
+    }
+</script>
+
+</body>
+</html>
